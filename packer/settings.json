@@ -1,0 +1,45 @@
+{
+  "variables": {
+    "aws_access_key_id": "",
+    "aws_secret_access_key": "",
+    "aws_default_region": ""
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key_id`}}",
+      "secret_key": "{{user `aws_secret_access_key`}}",
+      "region": "{{user `aws_default_region`}}",
+      "source_ami_filter": {
+        "filters": {
+          "name": "amzn2-ami-hvm-*-x86_64-gp2"
+        },
+        "owners": [
+          "137112412989"
+        ],
+        "most_recent": true
+      },
+      "instance_type": "t2.micro",
+      "ssh_username": "ec2-user",
+      "ssh_timeout": "5m",
+      "ami_name": "study-packer_{{timestamp}}",
+      "tags": {
+        "Base_AMI_ID": "{{ .SourceAMI }}",
+        "Base_AMI_NAME": "{{ .SourceAMIName }}"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "lib/data.txt",
+      "destination": "/tmp/data.txt"
+    },
+    {
+      "type": "shell",
+      "scripts": [
+        "packer/script.bash"
+      ]
+    }
+  ]
+}
